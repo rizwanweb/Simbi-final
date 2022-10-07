@@ -33,7 +33,7 @@ class Worker(QObject):
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = "" #webdriver.Chrome(ChromeDriverManager().install(), options=options)
     inbox = []
-    msg = "Hello,\nI came across your request\nI think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\nFor more information, here is my Simbi service:\nhttps://simbi.com/robert-velhorst-finding-your-simbi-candidate \nLooking forward to hearing from you\n~ Robert"
+    msg = "Hello,I came across your request, I think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \nLooking forward to hearing from you\n~ Robert"
 
 
 
@@ -103,9 +103,9 @@ class Worker(QObject):
                         btnConversation.click()
 
                         message1 = self.msg
-                        message1 = message1.replace("Hello,\n", "Hello " + user_title.text)
+                        message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
                         message = message1
-                        message = message1.replace("request\n", "request " + request_title.text +"\n")
+                        message = message1.replace("request,", "request " + request_title.text +"\n")
                         print(message)
                         sleep(2)
 
