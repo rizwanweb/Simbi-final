@@ -23,7 +23,6 @@ import sys
 import csv
 import config
 
-msg = 'Hello World'
 
 
 class Worker(QObject):
@@ -34,6 +33,8 @@ class Worker(QObject):
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = "" #webdriver.Chrome(ChromeDriverManager().install(), options=options)
     inbox = []
+    msg = "Hello,\n I came across your request\n I think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\n For more information, here is my Simbi service:\n https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n Looking forward to hearing from you\n ~ Robert"
+
 
     def Apprun(self):
         username =  "rizwansoomro@gmail.com"  # self.txtUsername.text()
@@ -101,7 +102,7 @@ class Worker(QObject):
                         btnConversation.click()
 
                         message1 = self.msg
-                        message1 = message1.replace("Hello,", "Hello " + user_title.text)
+                        message1 = message1.replace("Hello,\n", "Hello " + user_title.text)
                         message = message1
                         message = message1.replace("request\n", "request " + request_title.text +"\n")
                         print(message)
