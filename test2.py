@@ -124,7 +124,7 @@ class Worker(QObject):
                         
 
                     self.driver.get(f'https://simbi.com/requests?page={page_number}')
-                    sleepTime = int(self.txtTime.text())
+                    sleepTime = 60
                     self.inbox = []
                     self.loadPreviousRequestSent()
                     sleep(sleepTime * 60)
