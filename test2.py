@@ -38,6 +38,7 @@ class Worker(QObject):
 
 
     def Apprun(self):
+        print('hi')
         username =  "rizwansoomro@gmail.com"  # self.txtUsername.text()
         password =  "Nokia112"  # self.txtPassword.text()
         # print(username, password)
@@ -127,7 +128,7 @@ class Worker(QObject):
                     self.driver.get(f'https://simbi.com/requests?page={page_number}')
                     sleepTime = 60
                     self.inbox = []
-                    self.loadPreviousRequestSent()
+                    Ui_MainWindow.Ui_MainWindow.loadPreviousRequestSent()
                     sleep(sleepTime * 60)
             else:
                 pass
@@ -341,7 +342,7 @@ class Ui_MainWindow(object):
 
 
     # Run Function
-    def runApp(self):
+    def run(self):
         username = self.txtUsername.text()
         password = self.txtPassword.text()
         # print(username, password)
@@ -447,7 +448,8 @@ class Ui_MainWindow(object):
             file_reader = csv.reader(fil)
             for row in file_reader:
                 self.inbox.append(row)
-        self.lblCounter.setText(str(len(self.inbox)))
+        
+        return str(len(self.inbox))
 
 
     # Threading run function
