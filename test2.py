@@ -33,6 +33,7 @@ class Worker(QObject):
     options = webdriver.ChromeOptions()
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = "" #webdriver.Chrome(ChromeDriverManager().install(), options=options)
+    inbox = []
 
     def Apprun(self):
         username =  "rizwansoomro@gmail.com"  # self.txtUsername.text()
