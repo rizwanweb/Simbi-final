@@ -33,7 +33,7 @@ class Worker(QObject):
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = "" #webdriver.Chrome(ChromeDriverManager().install(), options=options)
     inbox = []
-    msg = "Hello,I came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
+    msg = "Hello, \nI came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
 
 
 
@@ -140,7 +140,7 @@ class Ui_MainWindow(object):
     inbox = []
     myURL = 'https://simbi.com/robert-velhorst-finding-your-simbi-candidate'
     Name = 'Rizwan'
-    msg = "Hello,I came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
+    msg = "Hello, \nI came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
     stop_thread = False
     iconName = "simbi.png" 
 
