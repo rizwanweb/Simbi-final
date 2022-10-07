@@ -471,6 +471,7 @@ class Ui_MainWindow(object):
 
         self.btnStart.setEnabled(False)
         self.btnStop.setEnabled(True)
+        self.statusbar.showMessage("Application is Running..")
         # self.thread.finished.connect(
         #     lambda: self.btnStart.setEnabled(True),
         #     lambda: self.btnStop.setEnabled(False)
