@@ -33,8 +33,15 @@ class Worker(QObject):
     options.add_experimental_option('excludeSwitches', ['enable-logging'])
     driver = "" #webdriver.Chrome(ChromeDriverManager().install(), options=options)
     inbox = []
-    msg = "Hello,\n I came across your request\n I think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\n For more information, here is my Simbi service:\n https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n Looking forward to hearing from you\n ~ Robert"
+    msg = "Hello,\nI came across your request\nI think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\nFor more information, here is my Simbi service:\nhttps://simbi.com/robert-velhorst-finding-your-simbi-candidate \nLooking forward to hearing from you\n~ Robert"
 
+    # Load entries from inbox.csv
+    def loadPreviousRequestSent(self):
+        with open('inbox.csv', 'r') as fil:
+            file_reader = csv.reader(fil)
+            for row in file_reader:
+                self.inbox.append(row)
+        self.lblCounter.setText(str(len(self.inbox)))
 
     def Apprun(self):
         username =  "rizwansoomro@gmail.com"  # self.txtUsername.text()
@@ -440,13 +447,6 @@ class Ui_MainWindow(object):
     def exitApp(self):
         app.exit()
 
-    # Load entries from inbox.csv
-    def loadPreviousRequestSent(self):
-        with open('inbox.csv', 'r') as fil:
-            file_reader = csv.reader(fil)
-            for row in file_reader:
-                self.inbox.append(row)
-        self.lblCounter.setText(str(len(self.inbox)))
 
     # Threading run function
     def startThreadRun(self):              
