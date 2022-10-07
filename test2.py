@@ -407,7 +407,7 @@ class Ui_MainWindow(object):
                         btnConversation.click()
 
                         message1 = self.msg
-                        message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
+                        message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n\n')
                         message = message1
                         message = message1.replace("request\n", "request " + request_title.text +"\n")
                         print(message)
