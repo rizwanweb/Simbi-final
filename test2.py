@@ -140,7 +140,7 @@ class Ui_MainWindow(object):
     inbox = []
     myURL = 'https://simbi.com/robert-velhorst-finding-your-simbi-candidate'
     Name = 'Rizwan'
-    msg = "Hello,\n I came across your request\nI think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\n For more information, here is my Simbi service:\n https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n Looking forward to hearing from you\n ~ Robert"
+    #msg = "Hello,\n I came across your request\nI think i can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that ?\n For more information, here is my Simbi service:\n https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n Looking forward to hearing from you\n ~ Robert"
     stop_thread = False
     iconName = "simbi.png" 
 
