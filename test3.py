@@ -239,8 +239,8 @@ class Ui_MainWindow(object):
         options = webdriver.ChromeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
 
-        driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
-        driver.get('https://www.simbi.com/')
+        self.driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
+        self.driver.get('https://www.simbi.com/')
 
         login_url = self.driver.find_element(By.XPATH, '/html/body/nav[2]/div/div[3]/a[3]')
         login_url.click()
@@ -358,6 +358,7 @@ class Ui_MainWindow(object):
     def stopThread(self):
         global running
         running = False
+        ui.driver.quit()
         #self.driver.close()
         self.btnStart.setEnabled(True)
         self.btnStop.setEnabled(False)
