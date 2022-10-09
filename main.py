@@ -13,7 +13,7 @@ from datetime import datetime
 from multiprocessing import Process
 from multiprocessing.connection import wait
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtTest import QTest
+from PyQt5.QtCore import QTimer
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
@@ -33,8 +33,11 @@ class Ui_MainWindow(object):
     Name = 'Rizwan'
     msg = "Hello, \nI came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
     iconName = "simbi.png"
-    timer = QtCore.QTimer()
-    
+
+    i = 0
+
+    sleep_time = 0
+
     
 
     def setupUi(self, MainWindow):
@@ -58,7 +61,7 @@ class Ui_MainWindow(object):
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.lblUsername)
         self.txtUsername = QtWidgets.QLineEdit(self.formLayoutWidget)
         self.txtUsername.setObjectName("txtUsername")
-        self.txtUsername.setText("noodzakelijkonline@gmail.com")
+        self.txtUsername.setText(config.username)
 
         # Password Label and TextBox
         self.formLayout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.txtUsername)
@@ -197,13 +200,11 @@ class Ui_MainWindow(object):
         # Load number of previous entries from csv file
         self.loadPreviousRequestSent()
 
-
         # Run function
         self.btnStart.clicked.connect(self.startThreadRun)
 
         # Stop Function
         self.btnStop.clicked.connect(self.stopThread)
-
         
 
     def retranslateUi(self, MainWindow):
@@ -232,28 +233,18 @@ class Ui_MainWindow(object):
         self.actionNew.setShortcut(_translate("MainWindow", "Ctrl+N"))
         MainWindow.setWindowIcon(QtGui.QIcon(self.iconName))
 
-        self.t = int(self.txtTime.text())
 
 
-
-    def startCounter(self):
-        self.timer.setInterval(1000)
-        self.timer.timeout.connect(self.counter)
-        self.timer.start()
-    
-    def counter(self):
-        self.t -= 1
-        self.lblCounter.setText(str(self.t)) 
+    def printmsg(self):
+        print("Waiting")
 
 
     # Run Function
-    def run(self):
-        self.statusbar.clearMessage()
-        
+    def run(self):        
         username = self.txtUsername.text()
         password = self.txtPassword.text()
         # print(username, password)
-        self.statusbar.showMessage("Simbi Application is running.")
+        
         options = webdriver.ChromeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
         # HEADLESS BROWSING
@@ -273,8 +264,8 @@ class Ui_MainWindow(object):
         txtUsername.send_keys(username)
         txtPassword.send_keys(password)
         btnLogin.click()
-        QTest.qSleep(3000)
-        # sleep(3)
+        
+        sleep(3)
 
         page_number = 1
         while page_number < 150:
@@ -298,8 +289,8 @@ class Ui_MainWindow(object):
             if len(request_links) > 0:
                 for link in request_links:
                     self.driver.get(link)
-                    QTest.qWait(2000)
-                    # sleep(2)
+                    
+                    sleep(2)
                     request_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[1]/h2[1]')
                     
@@ -313,7 +304,7 @@ class Ui_MainWindow(object):
                             link, user_request.text]
 
                     if data in self.inbox:
-                        print("Messege already sent")
+                        print(f"Messege already sent to {data[0]}")
                     else:
                         btnConversation = self.driver.find_element(
                             By.ID, 'start-conversation-btn')
@@ -322,14 +313,14 @@ class Ui_MainWindow(object):
                         message1 = self.msg
                         message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n\n')
                         message = message1
-                        message = message1.replace("request\n", "request " + request_title.text +"\n")                        
-                        QTest.qWait(2000)
-                        # sleep(2)
+                        message = message1.replace("request,", "request " + request_title.text +"\n")                        
+                        
+                        sleep(2)
 
                         inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
                         inquiry_box.send_keys(message)
-                        QTest.qWait(1000)
-                        # sleep(1)
+                        
+                        sleep(1)
                         btnCancel = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-default')
                         
                         btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
@@ -346,13 +337,15 @@ class Ui_MainWindow(object):
                         
 
                     self.driver.get(f'https://simbi.com/requests?page={page_number}')
-                    sleepTime = int(self.txtTime.text())
 
+                    sleepTime = int(self.txtTime.text())
                     now = datetime.now()
                     current_time = now.strftime("%H:%M:%S")
                     self.statusbar.showMessage(f"Last Message was sent at {current_time}. Waiting to resume after interval..")                    
-                    QTest.qWait(sleepTime)
-                    # sleep(sleepTime)
+                    #QTest.qSleep(sleepTime * 1000)
+                    sleep(sleepTime)
+                    self.statusbar.showMessage("Simbi Application is running.")
+                    
             else:
                 pass
             page_number += 1
@@ -377,13 +370,12 @@ class Ui_MainWindow(object):
             self.thread1 = Process(target=self.run)
             self.thread1.start()        
             if self.thread1.is_alive():
+                self.statusbar.showMessage("Simbi Application is running.")
                 self.btnStart.setDisabled(True)
                 self.btnStop.setEnabled(True)                
 
         except Exception as e:
             print("There was a problem with application", e, e.__class__)             
-
-
 
 
     # Terminate Multi-Process
@@ -392,7 +384,7 @@ class Ui_MainWindow(object):
             self.thread1.terminate()
             self.btnStop.setEnabled(False)      
             self.statusbar.showMessage("Please Wait. Stopping processes and clearing cache. This would take 15 seconds")
-            QTest.qWait(15000)
+            sleep(15)
             self.btnStart.setEnabled(True)            
             self.statusbar.showMessage("Simbi Application is ready to be run again.")
         except Exception as e:

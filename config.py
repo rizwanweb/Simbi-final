@@ -1,3 +1,5 @@
 name = 'Rizwan'
 service_URL = 'https://simbo.com/robert-velhorst-finding-your-simbi-candidate'
-password = "test password"
+
+username = 'rizwansoomro@gmail.com'
+password = "Nokia112"
