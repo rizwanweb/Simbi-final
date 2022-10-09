@@ -235,12 +235,19 @@ class Ui_MainWindow(object):
 
 
 
-    def printmsg(self):
-        print("Waiting")
+    def num(self, seconds):
+        for i in range(1, seconds):
+            print(i)
+            QtWidgets.QApplication.processEvents()
+            sleep(1)
+
+        
+
 
 
     # Run Function
-    def run(self):        
+    def run(self):
+        # self.num(3)        
         username = self.txtUsername.text()
         password = self.txtPassword.text()
         # print(username, password)
@@ -265,6 +272,7 @@ class Ui_MainWindow(object):
         txtPassword.send_keys(password)
         btnLogin.click()
         
+        # self.num(3) 
         sleep(3)
 
         page_number = 1
@@ -290,6 +298,7 @@ class Ui_MainWindow(object):
                 for link in request_links:
                     self.driver.get(link)
                     
+                    #self.num(2)
                     sleep(2)
                     request_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[1]/h2[1]')
@@ -306,6 +315,7 @@ class Ui_MainWindow(object):
                     if data in self.inbox:
                         print(f"Messege already sent to {data[0]}")
                     else:
+                        sleep(2)
                         btnConversation = self.driver.find_element(
                             By.ID, 'start-conversation-btn')
                         btnConversation.click()
@@ -314,14 +324,15 @@ class Ui_MainWindow(object):
                         message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
                         message = message1
                         message = message1.replace("request,", "request " + request_title.text +"\n")
-                        print(message)                        
-                        
+                        #print(message)                        
+                        #self.num(2)
                         sleep(2)
 
                         inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
                         inquiry_box.send_keys(message)
                         
-                        sleep(10)
+                        # self.num(1)
+                        sleep(1)
                         btnCancel = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-default')
                         
                         btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
@@ -329,23 +340,26 @@ class Ui_MainWindow(object):
                         btnCancel.click()
                         # btnSend.click()
 
+                        #self.num(2)
                         with open('inbox.csv', 'a', encoding="utf-8") as fin:
                             writer = csv.writer(fin)
                             writer.writerow(data)
-                        
-                        self.inbox = []
-                        self.loadPreviousRequestSent()
+                                                    
+                            sleep(1)
+                            self.inbox = []
+                            self.loadPreviousRequestSent()
                         
 
                     self.driver.get(f'https://simbi.com/requests?page={page_number}')
 
                     sleepTime = int(self.txtTime.text())
-                    now = datetime.now()
-                    current_time = now.strftime("%H:%M:%S")
-                    self.statusbar.showMessage(f"Last Message was sent at {current_time}. Waiting to resume after interval..")                    
+                    #now = datetime.now()
+                    #current_time = now.strftime("%H:%M:%S")
+                    #self.statusbar.showMessage(f"Last Message was sent at {current_time}. Waiting to resume after interval..")                    
                     #QTest.qSleep(sleepTime * 1000)
+                    #self.num(sleepTime)
                     sleep(sleepTime)
-                    self.statusbar.showMessage("Simbi Application is running.")
+                    #self.statusbar.showMessage("Simbi Application is running.")
                     
             else:
                 pass
@@ -385,7 +399,8 @@ class Ui_MainWindow(object):
             self.thread1.terminate()
             self.btnStop.setEnabled(False)      
             self.statusbar.showMessage("Please Wait. Stopping processes and clearing cache. This would take 15 seconds")
-            sleep(15)
+            self.num(15)
+            # sleep(15)
             self.btnStart.setEnabled(True)            
             self.statusbar.showMessage("Simbi Application is ready to be run again.")
         except Exception as e:
