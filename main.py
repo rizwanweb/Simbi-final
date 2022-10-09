@@ -311,16 +311,17 @@ class Ui_MainWindow(object):
                         btnConversation.click()
 
                         message1 = self.msg
-                        message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n\n')
+                        message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
                         message = message1
-                        message = message1.replace("request,", "request " + request_title.text +"\n")                        
+                        message = message1.replace("request,", "request " + request_title.text +"\n")
+                        print(message)                        
                         
                         sleep(2)
 
                         inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
                         inquiry_box.send_keys(message)
                         
-                        sleep(1)
+                        sleep(10)
                         btnCancel = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-default')
                         
                         btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
