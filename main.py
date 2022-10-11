@@ -12,18 +12,25 @@
 from datetime import datetime
 from multiprocessing import Process
 from multiprocessing.connection import wait
+from threading import Thread
+
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import QTimer
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
+from selenium.common.exceptions import NoSuchElementException
+
 from time import sleep
 import sys
 import csv
 import config
+
+from PyQt5.QtCore import QObject, QThread
+
+
 
 
 class Ui_MainWindow(object):
@@ -33,11 +40,6 @@ class Ui_MainWindow(object):
     Name = 'Rizwan'
     msg = "Hello, \nI came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
     iconName = "simbi.png"
-
-    i = 0
-
-    sleep_time = 0
-
     
 
     def setupUi(self, MainWindow):
@@ -198,6 +200,7 @@ class Ui_MainWindow(object):
         MainWindow.setTabOrder(self.statusImage, self.txtMessage)
 
         # Load number of previous entries from csv file
+        # self.loadPreviousRequestSent()
         self.loadPreviousRequestSent()
 
         # Run function
@@ -234,30 +237,19 @@ class Ui_MainWindow(object):
         MainWindow.setWindowIcon(QtGui.QIcon(self.iconName))
 
 
-
-    def num(self, seconds):
-        for i in range(1, seconds):
-            print(i)
-            QtWidgets.QApplication.processEvents()
-            sleep(1)
-
-        
-
-
-
     # Run Function
-    def run(self):
-        # self.num(3)        
+    def run(self):        
+               
         username = self.txtUsername.text()
         password = self.txtPassword.text()
-        # print(username, password)
+        
         
         options = webdriver.ChromeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        
         # HEADLESS BROWSING
         #options.add_argument('--headless')
 
-        # self.driver = webdriver.Chrome(ChromeDriverManager().install(), options=options)
         self.driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
         self.driver.get('https://www.simbi.com/')
 
@@ -272,11 +264,10 @@ class Ui_MainWindow(object):
         txtPassword.send_keys(password)
         btnLogin.click()
         
-        # self.num(3) 
-        sleep(3)
+        self.sleeping(3)
 
         page_number = 1
-        while page_number < 150:
+        while page_number < 200:
             self.driver.get(f'https://simbi.com/requests?page={page_number}')
 
             cards = self.driver.find_elements(By.CLASS_NAME, 'click-link')
@@ -298,7 +289,6 @@ class Ui_MainWindow(object):
                 for link in request_links:
                     self.driver.get(link)
                     
-                    #self.num(2)
                     sleep(2)
                     request_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[1]/h2[1]')
@@ -315,55 +305,77 @@ class Ui_MainWindow(object):
                     if data in self.inbox:
                         print(f"Messege already sent to {data[0]}")
                     else:
-                        sleep(2)
-                        btnConversation = self.driver.find_element(
-                            By.ID, 'start-conversation-btn')
-                        btnConversation.click()
-
-                        message1 = self.msg
-                        message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
-                        message = message1
-                        message = message1.replace("request,", "request " + request_title.text +"\n")
-                        #print(message)                        
-                        #self.num(2)
-                        sleep(2)
-
-                        inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
-                        inquiry_box.send_keys(message)
-                        
-                        # self.num(1)
-                        sleep(1)
-                        btnCancel = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-default')
-                        
-                        btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
-                        
-                        btnCancel.click()
-                        # btnSend.click()
-
-                        #self.num(2)
-                        with open('inbox.csv', 'a', encoding="utf-8") as fin:
-                            writer = csv.writer(fin)
-                            writer.writerow(data)
-                                                    
+                        try:
+                            sleep(2)
+                            
+                            btnConversation = self.driver.find_element(
+                                By.XPATH, "//*[contains(text(), 'Start a Conversation')]")
+                            
                             sleep(1)
-                            self.inbox = []
-                            self.loadPreviousRequestSent()
-                        
+                            
+                            btnConversation.click()
 
+                            message1 = self.msg
+                            message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
+                            message = message1
+                            message = message1.replace("request,", "request " + request_title.text +"\n")                       
+                            
+                            sleep(2)
+
+                            inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
+                            inquiry_box.send_keys(message)
+                            
+                            self.sleeping(1)
+                            btnCancel = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-default')
+                            
+                            btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
+                            
+                            btnCancel.click()
+                            # btnSend.click()
+
+                            self.inbox = []
+
+                            with open('inbox.csv', 'a', encoding="utf-8") as fin:
+                                writer = csv.writer(fin)
+                                writer.writerow(data)
+                        except NoSuchElementException as ex:
+                            print("*******************Massage already sent**********************")
+                            with open('inbox.csv', 'a', encoding="utf-8") as fin:
+                                writer = csv.writer(fin)
+                                writer.writerow(data)
+
+                    self.update_inbox_thread()                    
+        
                     self.driver.get(f'https://simbi.com/requests?page={page_number}')
 
                     sleepTime = int(self.txtTime.text())
-                    #now = datetime.now()
-                    #current_time = now.strftime("%H:%M:%S")
-                    #self.statusbar.showMessage(f"Last Message was sent at {current_time}. Waiting to resume after interval..")                    
-                    #QTest.qSleep(sleepTime * 1000)
-                    #self.num(sleepTime)
-                    sleep(sleepTime)
-                    #self.statusbar.showMessage("Simbi Application is running.")
+
+                    self.sleeping(sleepTime)
+                    self.statusbar.showMessage("Simbi Application is running.")
                     
             else:
                 pass
             page_number += 1
+
+
+
+    def waiting(self, seconds):
+        print(f"sleeping for {seconds} seconds")
+        sleep(seconds)
+    
+    def sleeping(self, seconds):
+        t1 = Thread(target= lambda: self.waiting(seconds))
+        t1.start()
+        t1.join()
+
+    def update_inbox_thread(self):
+        try:
+            t1 = Thread(target=self.loadPreviousRequestSent)
+            t1.start()        
+            t1.join()                
+
+        except Exception as e:
+            print("There was a problem with application", e, e.__class__)
 
     # Exit Application Function
     def exitApp(self):
@@ -371,6 +383,7 @@ class Ui_MainWindow(object):
 
         # Load entries from inbox.csv
     def loadPreviousRequestSent(self):
+        
         with open('inbox.csv', 'r') as fil:
             file_reader = csv.reader(fil)
             for row in file_reader:
@@ -398,9 +411,9 @@ class Ui_MainWindow(object):
         try:
             self.thread1.terminate()
             self.btnStop.setEnabled(False)      
-            self.statusbar.showMessage("Please Wait. Stopping processes and clearing cache. This would take 15 seconds")
-            self.num(15)
-            # sleep(15)
+            self.statusbar.showMessage("Please Wait. Stopping processes and clearing cache. This would take 5 seconds")
+            self.sleeping(5)
+            
             self.btnStart.setEnabled(True)            
             self.statusbar.showMessage("Simbi Application is ready to be run again.")
         except Exception as e:
