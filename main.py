@@ -296,8 +296,12 @@ class Ui_MainWindow(object):
                     user_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[2]/div[3]/div[2]/div[1]/a/h4')
                     
-                    user_request = self.driver.find_element(
-                        By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[4]/p')
+                    try:
+                        user_request = self.driver.find_element(
+                            By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[4]/p')
+                    except NoSuchElementException as e:
+                        user_request = self.driver.find_element(
+                            By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[3]/p[1]')
                     
                     data = [user_title.text, request_title.text,
                             link, user_request.text]
