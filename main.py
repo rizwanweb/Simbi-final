@@ -268,7 +268,7 @@ class Ui_MainWindow(object):
         
         self.sleeping(3)
 
-        page_number = 20
+        page_number = 1
         while page_number < 200:
             self.driver.get(f'https://simbi.com/requests?page={page_number}')
 
@@ -347,9 +347,9 @@ class Ui_MainWindow(object):
                             
                             btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
                             
-                            btnCancel.click()
-                            # btnSend.click()
-
+                            # btnCancel.click()
+                            btnSend.click()
+                            sleep(3)
                             self.inbox = []
 
                             with open('inbox.csv', 'a', encoding="utf-8") as fin:
@@ -367,7 +367,7 @@ class Ui_MainWindow(object):
 
                     sleepTime = int(self.txtTime.text())
 
-                    self.sleeping(sleepTime)
+                    self.sleeping(sleepTime * 60)
                     self.statusbar.showMessage("Simbi Application is running.")
                     
             else:
