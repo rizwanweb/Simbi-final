@@ -23,6 +23,8 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.common.exceptions import NoSuchElementException
 
+from cleantext import clean
+
 from time import sleep
 import sys
 import csv
@@ -289,22 +291,30 @@ class Ui_MainWindow(object):
                 for link in request_links:
                     self.driver.get(link)
                     
+                    
                     sleep(2)
                     request_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[1]/h2[1]')
                     
+                    request_title = clean(request_title.text, no_emoji=True)
+                    
                     user_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[2]/div[3]/div[2]/div[1]/a/h4')
+
+                    user_title = clean(user_title.text, no_emoji=True)
                     
                     try:
                         user_request = self.driver.find_element(
                             By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[4]/p')
+                        
+                        user_request = clean(user_request.text, no_emoji=True)
                     except NoSuchElementException as e:
                         user_request = self.driver.find_element(
                             By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[3]/p[1]')
+                        user_request = clean(user_request.text, no_emoji=True)
                     
-                    data = [user_title.text, request_title.text,
-                            link, user_request.text]
+                    data = [user_title, request_title,
+                            link, user_request]
 
                     if data in self.inbox:
                         print(f"Messege already sent to {data[0]}")
@@ -322,12 +332,15 @@ class Ui_MainWindow(object):
                             message1 = self.msg
                             message1 = message1.replace("Hello,", "Hello " + user_title.text + '\n')
                             message = message1
-                            message = message1.replace("request,", "request " + request_title.text +"\n")                       
+                            message = message1.replace("request,", "request " + request_title.text +"\n")
+
+                            message = clean(message, no_emoji=True)                       
                             
                             sleep(2)
 
                             inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
                             inquiry_box.send_keys(message)
+                            print(f"Sending Massage to {user_title}")
                             
                             self.sleeping(1)
                             btnCancel = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-default')
