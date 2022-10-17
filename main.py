@@ -31,15 +31,14 @@ import csv
 import config
 
 from PyQt5.QtCore import QObject, QThread
+from datetime import datetime
 
 
 
 
 class Ui_MainWindow(object):
 
-    inbox = []
-    myURL = 'https://simbi.com/robert-velhorst-finding-your-simbi-candidate'
-    Name = 'Rizwan'
+    inbox = []   
     msg = "Hello, \nI came across your request, \nI think I can help by finding the right Simbi candidate for you to help you with your request. Would you be interested in that?\n\nFor more information, here is my Simbi service: https://simbi.com/robert-velhorst-finding-your-simbi-candidate \n\nLooking forward to hearing from you\n~ Robert"
     iconName = "simbi.png"
     
@@ -248,6 +247,7 @@ class Ui_MainWindow(object):
         
         options = webdriver.ChromeOptions()
         options.add_experimental_option('excludeSwitches', ['enable-logging'])
+        options.add_argument('--headless')
         
         # HEADLESS BROWSING
         #options.add_argument('--headless')
@@ -296,22 +296,22 @@ class Ui_MainWindow(object):
                     request_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[1]/h2[1]')
                     
-                    request_title = clean(request_title.text, no_emoji=True)
+                    request_title = clean(request_title.text, no_emoji=True, lower=False)
                     
                     user_title = self.driver.find_element(
                         By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[2]/div[3]/div[2]/div[1]/a/h4')
 
-                    user_title = clean(user_title.text, no_emoji=True)
+                    user_title = clean(user_title.text, no_emoji=True, lower=False)
                     
                     try:
                         user_request = self.driver.find_element(
                             By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[4]/p')
                         
-                        user_request = clean(user_request.text, no_emoji=True)
+                        user_request = clean(user_request.text, no_emoji=True, lower=False)
                     except NoSuchElementException as e:
                         user_request = self.driver.find_element(
                             By.XPATH, '//*[@id="main-wrapper"]/div[2]/div/div/div[1]/div[2]/div/div[2]/div[3]/p[1]')
-                        user_request = clean(user_request.text, no_emoji=True)
+                        user_request = clean(user_request.text, no_emoji=True, lower=False)
                     
                     data = [user_title, request_title,
                             link, user_request]
@@ -334,12 +334,13 @@ class Ui_MainWindow(object):
                             message = message1
                             message = message1.replace("request,", "request " + request_title +"\n")
 
-                            message = clean(message, no_emoji=True)                       
+                            message = clean(message, no_emoji=True, lower=False)                       
                             
                             sleep(2)
 
                             inquiry_box = self.driver.find_element(By.NAME, 'inquiry_text')
                             inquiry_box.send_keys(message)
+                            print(message)
                             print(f"Sending Massage to {user_title}")
                             
                             self.sleeping(1)
@@ -347,8 +348,8 @@ class Ui_MainWindow(object):
                             
                             btnSend = self.driver.find_element(By.CSS_SELECTOR, 'body > div.modal.fade.brand-modal.v-middle.inquiry-modal.in > div > div > div > div.flex.between > button.btn.btn-wide-xs.btn-primary')
                             
-                            # btnCancel.click()
-                            btnSend.click()
+                            btnCancel.click()
+                            # btnSend.click()
                             sleep(3)
                             self.inbox = []
 
@@ -367,6 +368,7 @@ class Ui_MainWindow(object):
 
                     sleepTime = int(self.txtTime.text())
 
+                    print(f"Last msg was sent at {datetime.now().time()}")
                     self.sleeping(sleepTime * 60)
                     self.statusbar.showMessage("Simbi Application is running.")
                     
