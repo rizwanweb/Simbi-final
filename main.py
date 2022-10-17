@@ -268,7 +268,7 @@ class Ui_MainWindow(object):
         
         self.sleeping(3)
 
-        page_number = 1
+        page_number = 20
         while page_number < 200:
             self.driver.get(f'https://simbi.com/requests?page={page_number}')
 
